@@ -1,0 +1,264 @@
+<?php
+
+namespace App\Http\Controllers\Api\Inventory;
+
+use App\Http\Controllers\BaseController;
+use App\Modules\Inventory\Services\InventoryService;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+
+class InventoryController extends BaseController
+{
+    /**
+     * @var InventoryService
+     */
+    protected $inventoryService;
+
+    /**
+     * InventoryController constructor.
+     *
+     * @param InventoryService $inventoryService
+     */
+    public function __construct(InventoryService $inventoryService)
+    {
+        $this->inventoryService = $inventoryService;
+    }
+
+    /**
+     * Record stock IN transaction.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function stockIn(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'variant_id' => 'nullable|exists:product_variants,id',
+                'branch_id' => 'nullable|exists:branches,id',
+                'location_id' => 'nullable|exists:locations,id',
+                'quantity' => 'required|numeric|min:0.0001',
+                'transaction_type' => 'required|in:purchase,return,adjustment_increase,production,transfer_in',
+                'reference_type' => 'nullable|string',
+                'reference_id' => 'nullable|integer',
+                'reference_number' => 'nullable|string',
+                'batch_number' => 'nullable|string',
+                'serial_number' => 'nullable|string',
+                'lot_number' => 'nullable|string',
+                'expiry_date' => 'nullable|date',
+                'unit_cost' => 'nullable|numeric|min:0',
+                'notes' => 'nullable|string',
+            ]);
+
+            $ledgerEntry = $this->inventoryService->stockIn($validated);
+
+            return $this->successResponse($ledgerEntry, 'Stock IN recorded successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to record stock IN: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Record stock OUT transaction.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function stockOut(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'variant_id' => 'nullable|exists:product_variants,id',
+                'branch_id' => 'nullable|exists:branches,id',
+                'location_id' => 'nullable|exists:locations,id',
+                'quantity' => 'required|numeric|min:0.0001',
+                'transaction_type' => 'required|in:sale,return_outbound,adjustment_decrease,consumption,transfer_out',
+                'reference_type' => 'nullable|string',
+                'reference_id' => 'nullable|integer',
+                'reference_number' => 'nullable|string',
+                'batch_number' => 'nullable|string',
+                'serial_number' => 'nullable|string',
+                'lot_number' => 'nullable|string',
+                'unit_cost' => 'nullable|numeric|min:0',
+                'notes' => 'nullable|string',
+            ]);
+
+            $ledgerEntry = $this->inventoryService->stockOut($validated);
+
+            return $this->successResponse($ledgerEntry, 'Stock OUT recorded successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to record stock OUT: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Record stock adjustment.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function stockAdjustment(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'variant_id' => 'nullable|exists:product_variants,id',
+                'branch_id' => 'nullable|exists:branches,id',
+                'location_id' => 'nullable|exists:locations,id',
+                'target_balance' => 'required|numeric|min:0',
+                'reference_type' => 'nullable|string',
+                'reference_id' => 'nullable|integer',
+                'reference_number' => 'nullable|string',
+                'notes' => 'nullable|string',
+            ]);
+
+            $ledgerEntry = $this->inventoryService->stockAdjustment($validated);
+
+            return $this->successResponse($ledgerEntry, 'Stock adjustment recorded successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to record stock adjustment: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Transfer stock between locations.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function stockTransfer(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'variant_id' => 'nullable|exists:product_variants,id',
+                'from_branch_id' => 'nullable|exists:branches,id',
+                'from_location_id' => 'required|exists:locations,id',
+                'to_branch_id' => 'nullable|exists:branches,id',
+                'to_location_id' => 'required|exists:locations,id|different:from_location_id',
+                'quantity' => 'required|numeric|min:0.0001',
+                'reference_type' => 'nullable|string',
+                'reference_id' => 'nullable|integer',
+                'reference_number' => 'nullable|string',
+                'unit_cost' => 'nullable|numeric|min:0',
+                'notes' => 'nullable|string',
+            ]);
+
+            $result = $this->inventoryService->stockTransfer($validated);
+
+            return $this->successResponse($result, 'Stock transfer completed successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to transfer stock: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get current stock balance.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getCurrentBalance(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'variant_id' => 'nullable|exists:product_variants,id',
+                'branch_id' => 'nullable|exists:branches,id',
+                'location_id' => 'nullable|exists:locations,id',
+            ]);
+
+            $balance = $this->inventoryService->getCurrentBalance(
+                $validated['product_id'],
+                $validated['branch_id'] ?? null,
+                $validated['location_id'] ?? null,
+                $validated['variant_id'] ?? null
+            );
+
+            return $this->successResponse([
+                'product_id' => $validated['product_id'],
+                'current_balance' => $balance,
+            ], 'Current balance retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to get current balance: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get stock movements history.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getMovements(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'branch_id' => 'nullable|exists:branches,id',
+            ]);
+
+            $movements = $this->inventoryService->getStockMovements(
+                $validated['product_id'],
+                new \DateTime($validated['start_date']),
+                new \DateTime($validated['end_date']),
+                $validated['branch_id'] ?? null
+            );
+
+            return $this->successResponse($movements, 'Stock movements retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to get stock movements: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get expiring items.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getExpiringItems(Request $request): JsonResponse
+    {
+        try {
+            $daysThreshold = $request->input('days_threshold', 30);
+            $branchId = $request->input('branch_id');
+
+            $expiringItems = $this->inventoryService->getExpiringItems($daysThreshold, $branchId);
+
+            return $this->successResponse($expiringItems, 'Expiring items retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to get expiring items: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Calculate stock valuation.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function calculateValuation(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'method' => 'required|in:fifo,lifo,average',
+                'branch_id' => 'nullable|exists:branches,id',
+            ]);
+
+            $valuation = $this->inventoryService->calculateStockValuation(
+                $validated['product_id'],
+                $validated['method'],
+                $validated['branch_id'] ?? null
+            );
+
+            return $this->successResponse($valuation, 'Stock valuation calculated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to calculate stock valuation: ' . $e->getMessage());
+        }
+    }
+}
