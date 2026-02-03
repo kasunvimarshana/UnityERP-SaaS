@@ -178,6 +178,42 @@ class Product extends Model
     }
 
     /**
+     * Get pricing rules for the product.
+     */
+    public function pricingRules()
+    {
+        return $this->hasMany(\App\Models\PricingRule::class);
+    }
+
+    /**
+     * Get discount tiers for the product.
+     */
+    public function discountTiers()
+    {
+        return $this->hasMany(\App\Models\DiscountTier::class);
+    }
+
+    /**
+     * Get selling discount tiers.
+     */
+    public function sellingDiscountTiers()
+    {
+        return $this->hasMany(\App\Models\DiscountTier::class)
+            ->where('tier_type', 'selling')
+            ->orderBy('min_quantity');
+    }
+
+    /**
+     * Get buying discount tiers.
+     */
+    public function buyingDiscountTiers()
+    {
+        return $this->hasMany(\App\Models\DiscountTier::class)
+            ->where('tier_type', 'buying')
+            ->orderBy('min_quantity');
+    }
+
+    /**
      * Check if product is active.
      *
      * @return bool
