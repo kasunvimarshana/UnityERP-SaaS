@@ -31,8 +31,13 @@ return new class extends Migration
             // Rename symbol to abbreviation for consistency with model
             $table->renameColumn('symbol', 'abbreviation');
             
-            // Rename code to code_old to avoid conflicts
+            // Rename code to code_old to avoid conflicts - make it nullable
             $table->renameColumn('code', 'code_old');
+        });
+        
+        // Make code_old nullable
+        Schema::table('units_of_measure', function (Blueprint $table) {
+            $table->string('code_old', 20)->nullable()->change();
         });
 
         // Make abbreviation unique per tenant
