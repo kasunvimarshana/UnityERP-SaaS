@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\BaseController;
 use App\Modules\Inventory\Services\InventoryService;
+use App\Http\Requests\Inventory\StockInRequest;
+use App\Http\Requests\Inventory\StockOutRequest;
+use App\Http\Requests\Inventory\StockAdjustmentRequest;
+use App\Http\Requests\Inventory\StockTransferRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -27,29 +31,13 @@ class InventoryController extends BaseController
     /**
      * Record stock IN transaction.
      *
-     * @param Request $request
+     * @param StockInRequest $request
      * @return JsonResponse
      */
-    public function stockIn(Request $request): JsonResponse
+    public function stockIn(StockInRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'product_id' => 'required|exists:products,id',
-                'variant_id' => 'nullable|exists:product_variants,id',
-                'branch_id' => 'nullable|exists:branches,id',
-                'location_id' => 'nullable|exists:locations,id',
-                'quantity' => 'required|numeric|min:0.0001',
-                'transaction_type' => 'required|in:purchase,return,adjustment_increase,production,transfer_in',
-                'reference_type' => 'nullable|string',
-                'reference_id' => 'nullable|integer',
-                'reference_number' => 'nullable|string',
-                'batch_number' => 'nullable|string',
-                'serial_number' => 'nullable|string',
-                'lot_number' => 'nullable|string',
-                'expiry_date' => 'nullable|date',
-                'unit_cost' => 'nullable|numeric|min:0',
-                'notes' => 'nullable|string',
-            ]);
+            $validated = $request->validated();
 
             $ledgerEntry = $this->inventoryService->stockIn($validated);
 
@@ -62,28 +50,13 @@ class InventoryController extends BaseController
     /**
      * Record stock OUT transaction.
      *
-     * @param Request $request
+     * @param StockOutRequest $request
      * @return JsonResponse
      */
-    public function stockOut(Request $request): JsonResponse
+    public function stockOut(StockOutRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'product_id' => 'required|exists:products,id',
-                'variant_id' => 'nullable|exists:product_variants,id',
-                'branch_id' => 'nullable|exists:branches,id',
-                'location_id' => 'nullable|exists:locations,id',
-                'quantity' => 'required|numeric|min:0.0001',
-                'transaction_type' => 'required|in:sale,return_outbound,adjustment_decrease,consumption,transfer_out',
-                'reference_type' => 'nullable|string',
-                'reference_id' => 'nullable|integer',
-                'reference_number' => 'nullable|string',
-                'batch_number' => 'nullable|string',
-                'serial_number' => 'nullable|string',
-                'lot_number' => 'nullable|string',
-                'unit_cost' => 'nullable|numeric|min:0',
-                'notes' => 'nullable|string',
-            ]);
+            $validated = $request->validated();
 
             $ledgerEntry = $this->inventoryService->stockOut($validated);
 
@@ -96,23 +69,13 @@ class InventoryController extends BaseController
     /**
      * Record stock adjustment.
      *
-     * @param Request $request
+     * @param StockAdjustmentRequest $request
      * @return JsonResponse
      */
-    public function stockAdjustment(Request $request): JsonResponse
+    public function stockAdjustment(StockAdjustmentRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'product_id' => 'required|exists:products,id',
-                'variant_id' => 'nullable|exists:product_variants,id',
-                'branch_id' => 'nullable|exists:branches,id',
-                'location_id' => 'nullable|exists:locations,id',
-                'target_balance' => 'required|numeric|min:0',
-                'reference_type' => 'nullable|string',
-                'reference_id' => 'nullable|integer',
-                'reference_number' => 'nullable|string',
-                'notes' => 'nullable|string',
-            ]);
+            $validated = $request->validated();
 
             $ledgerEntry = $this->inventoryService->stockAdjustment($validated);
 
@@ -125,26 +88,13 @@ class InventoryController extends BaseController
     /**
      * Transfer stock between locations.
      *
-     * @param Request $request
+     * @param StockTransferRequest $request
      * @return JsonResponse
      */
-    public function stockTransfer(Request $request): JsonResponse
+    public function stockTransfer(StockTransferRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'product_id' => 'required|exists:products,id',
-                'variant_id' => 'nullable|exists:product_variants,id',
-                'from_branch_id' => 'nullable|exists:branches,id',
-                'from_location_id' => 'required|exists:locations,id',
-                'to_branch_id' => 'nullable|exists:branches,id',
-                'to_location_id' => 'required|exists:locations,id|different:from_location_id',
-                'quantity' => 'required|numeric|min:0.0001',
-                'reference_type' => 'nullable|string',
-                'reference_id' => 'nullable|integer',
-                'reference_number' => 'nullable|string',
-                'unit_cost' => 'nullable|numeric|min:0',
-                'notes' => 'nullable|string',
-            ]);
+            $validated = $request->validated();
 
             $result = $this->inventoryService->stockTransfer($validated);
 

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\BaseController;
 use App\Modules\Product\Services\ProductService;
+use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Requests\Product\CalculatePriceRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -45,34 +48,13 @@ class ProductController extends BaseController
     /**
      * Store a newly created product.
      *
-     * @param Request $request
+     * @param StoreProductRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreProductRequest $request): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'sku' => 'required|string|unique:products,sku',
-                'type' => 'required|in:inventory,service,combo,bundle,digital',
-                'category_id' => 'nullable|exists:product_categories,id',
-                'description' => 'nullable|string',
-                'buying_price' => 'nullable|numeric|min:0',
-                'selling_price' => 'required|numeric|min:0',
-                'mrp' => 'nullable|numeric|min:0',
-                'buying_unit_id' => 'nullable|exists:units_of_measure,id',
-                'selling_unit_id' => 'nullable|exists:units_of_measure,id',
-                'stock_unit_id' => 'nullable|exists:units_of_measure,id',
-                'tax_rate_id' => 'nullable|exists:tax_rates,id',
-                'track_inventory' => 'nullable|boolean',
-                'track_serial' => 'nullable|boolean',
-                'track_batch' => 'nullable|boolean',
-                'has_expiry' => 'nullable|boolean',
-                'min_stock_level' => 'nullable|numeric|min:0',
-                'max_stock_level' => 'nullable|numeric|min:0',
-                'reorder_level' => 'nullable|numeric|min:0',
-                'is_active' => 'nullable|boolean',
-            ]);
+            $validated = $request->validated();
 
             $product = $this->productService->create($validated);
 
@@ -102,29 +84,14 @@ class ProductController extends BaseController
     /**
      * Update the specified product.
      *
-     * @param Request $request
+     * @param UpdateProductRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateProductRequest $request, int $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'name' => 'sometimes|string|max:255',
-                'sku' => 'sometimes|string|unique:products,sku,' . $id,
-                'type' => 'sometimes|in:inventory,service,combo,bundle,digital',
-                'category_id' => 'nullable|exists:product_categories,id',
-                'description' => 'nullable|string',
-                'buying_price' => 'nullable|numeric|min:0',
-                'selling_price' => 'sometimes|numeric|min:0',
-                'mrp' => 'nullable|numeric|min:0',
-                'tax_rate_id' => 'nullable|exists:tax_rates,id',
-                'track_inventory' => 'nullable|boolean',
-                'min_stock_level' => 'nullable|numeric|min:0',
-                'max_stock_level' => 'nullable|numeric|min:0',
-                'reorder_level' => 'nullable|numeric|min:0',
-                'is_active' => 'nullable|boolean',
-            ]);
+            $validated = $request->validated();
 
             $product = $this->productService->update($id, $validated);
 
@@ -206,17 +173,14 @@ class ProductController extends BaseController
     /**
      * Calculate final price for a product.
      *
-     * @param Request $request
+     * @param CalculatePriceRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function calculatePrice(Request $request, int $id): JsonResponse
+    public function calculatePrice(CalculatePriceRequest $request, int $id): JsonResponse
     {
         try {
-            $validated = $request->validate([
-                'quantity' => 'required|numeric|min:1',
-                'context' => 'nullable|array',
-            ]);
+            $validated = $request->validated();
 
             $priceDetails = $this->productService->calculateFinalPrice(
                 $id,
