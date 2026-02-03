@@ -33,6 +33,8 @@ use App\Http\Controllers\Api\Taxation\TaxGroupController;
 use App\Http\Controllers\Api\Taxation\TaxExemptionController;
 use App\Http\Controllers\Api\Taxation\TaxJurisdictionController;
 use App\Http\Controllers\Api\Taxation\TaxCalculationController;
+use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PushSubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -470,5 +472,23 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::get('/summary', [TaxCalculationController::class, 'summary']);
             Route::get('/breakdown', [TaxCalculationController::class, 'breakdown']);
         });
+    });
+
+    // Notification Routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('/{notificationId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/preferences', [NotificationController::class, 'getPreferences']);
+        Route::put('/preferences', [NotificationController::class, 'updatePreferences']);
+    });
+
+    // Push Notification Routes
+    Route::prefix('push')->group(function () {
+        Route::get('/public-key', [PushSubscriptionController::class, 'getPublicKey']);
+        Route::post('/subscribe', [PushSubscriptionController::class, 'subscribe']);
+        Route::post('/unsubscribe', [PushSubscriptionController::class, 'unsubscribe']);
+        Route::post('/test', [PushSubscriptionController::class, 'test']);
     });
 });
