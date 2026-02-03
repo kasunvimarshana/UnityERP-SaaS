@@ -24,6 +24,17 @@ use App\Http\Controllers\Api\MasterData\CurrencyController;
 use App\Http\Controllers\Api\MasterData\TaxRateController;
 use App\Http\Controllers\Api\MasterData\UnitOfMeasureController;
 use App\Http\Controllers\Api\MasterData\CountryController;
+use App\Http\Controllers\Api\Manufacturing\BillOfMaterialController;
+use App\Http\Controllers\Api\Manufacturing\WorkOrderController;
+use App\Http\Controllers\Api\Warehouse\WarehouseTransferController;
+use App\Http\Controllers\Api\Warehouse\WarehousePickingController;
+use App\Http\Controllers\Api\Warehouse\WarehousePutawayController;
+use App\Http\Controllers\Api\Taxation\TaxGroupController;
+use App\Http\Controllers\Api\Taxation\TaxExemptionController;
+use App\Http\Controllers\Api\Taxation\TaxJurisdictionController;
+use App\Http\Controllers\Api\Taxation\TaxCalculationController;
+use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\PushSubscriptionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -338,5 +349,146 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::post('/{id}/activate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'activate']);
             Route::post('/{id}/deactivate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'deactivate']);
         });
+    });
+    
+    // Manufacturing Routes
+    Route::prefix('manufacturing')->group(function () {
+        // Bill of Materials (BOM)
+        Route::prefix('boms')->group(function () {
+            Route::get('/', [BillOfMaterialController::class, 'index']);
+            Route::post('/', [BillOfMaterialController::class, 'store']);
+            Route::get('/{id}', [BillOfMaterialController::class, 'show']);
+            Route::put('/{id}', [BillOfMaterialController::class, 'update']);
+            Route::delete('/{id}', [BillOfMaterialController::class, 'destroy']);
+            Route::post('/{id}/activate', [BillOfMaterialController::class, 'activate']);
+            Route::post('/{id}/deactivate', [BillOfMaterialController::class, 'deactivate']);
+            Route::get('/{id}/calculate-materials', [BillOfMaterialController::class, 'calculateMaterials']);
+            Route::get('/product/{productId}', [BillOfMaterialController::class, 'getByProduct']);
+        });
+        
+        // Work Orders
+        Route::prefix('work-orders')->group(function () {
+            Route::get('/', [WorkOrderController::class, 'index']);
+            Route::post('/', [WorkOrderController::class, 'store']);
+            Route::get('/in-progress', [WorkOrderController::class, 'inProgress']);
+            Route::get('/overdue', [WorkOrderController::class, 'overdue']);
+            Route::get('/{id}', [WorkOrderController::class, 'show']);
+            Route::put('/{id}', [WorkOrderController::class, 'update']);
+            Route::delete('/{id}', [WorkOrderController::class, 'destroy']);
+            Route::post('/{id}/start-production', [WorkOrderController::class, 'startProduction']);
+            Route::post('/{id}/complete-production', [WorkOrderController::class, 'completeProduction']);
+            Route::post('/{id}/cancel', [WorkOrderController::class, 'cancel']);
+        });
+    });
+
+    // Warehouse Management Routes
+    Route::prefix('warehouse')->group(function () {
+        // Warehouse Transfer routes
+        Route::prefix('transfers')->group(function () {
+            Route::get('/', [WarehouseTransferController::class, 'index']);
+            Route::post('/', [WarehouseTransferController::class, 'store']);
+            Route::get('/pending', [WarehouseTransferController::class, 'pending']);
+            Route::get('/in-transit', [WarehouseTransferController::class, 'inTransit']);
+            Route::get('/{id}', [WarehouseTransferController::class, 'show']);
+            Route::put('/{id}', [WarehouseTransferController::class, 'update']);
+            Route::delete('/{id}', [WarehouseTransferController::class, 'destroy']);
+            Route::post('/{id}/approve', [WarehouseTransferController::class, 'approve']);
+            Route::post('/{id}/ship', [WarehouseTransferController::class, 'ship']);
+            Route::post('/{id}/receive', [WarehouseTransferController::class, 'receive']);
+            Route::post('/{id}/cancel', [WarehouseTransferController::class, 'cancel']);
+        });
+
+        // Warehouse Picking routes
+        Route::prefix('pickings')->group(function () {
+            Route::get('/', [WarehousePickingController::class, 'index']);
+            Route::post('/', [WarehousePickingController::class, 'store']);
+            Route::get('/pending', [WarehousePickingController::class, 'pending']);
+            Route::get('/efficiency', [WarehousePickingController::class, 'efficiency']);
+            Route::get('/{id}', [WarehousePickingController::class, 'show']);
+            Route::delete('/{id}', [WarehousePickingController::class, 'destroy']);
+            Route::post('/{id}/assign', [WarehousePickingController::class, 'assign']);
+            Route::post('/{id}/start', [WarehousePickingController::class, 'start']);
+            Route::post('/{id}/pick', [WarehousePickingController::class, 'pick']);
+            Route::post('/{id}/complete', [WarehousePickingController::class, 'complete']);
+            Route::post('/{id}/cancel', [WarehousePickingController::class, 'cancel']);
+        });
+
+        // Warehouse Putaway routes
+        Route::prefix('putaways')->group(function () {
+            Route::get('/', [WarehousePutawayController::class, 'index']);
+            Route::post('/', [WarehousePutawayController::class, 'store']);
+            Route::get('/pending', [WarehousePutawayController::class, 'pending']);
+            Route::get('/{id}', [WarehousePutawayController::class, 'show']);
+            Route::delete('/{id}', [WarehousePutawayController::class, 'destroy']);
+            Route::post('/{id}/assign', [WarehousePutawayController::class, 'assign']);
+            Route::post('/{id}/start', [WarehousePutawayController::class, 'start']);
+            Route::post('/{id}/putaway', [WarehousePutawayController::class, 'putaway']);
+            Route::post('/{id}/complete', [WarehousePutawayController::class, 'complete']);
+            Route::post('/{id}/cancel', [WarehousePutawayController::class, 'cancel']);
+        });
+    });
+
+    // Taxation Routes
+    Route::prefix('taxation')->group(function () {
+        // Tax Groups
+        Route::prefix('tax-groups')->group(function () {
+            Route::get('/', [TaxGroupController::class, 'index']);
+            Route::post('/', [TaxGroupController::class, 'store']);
+            Route::get('/active', [TaxGroupController::class, 'active']);
+            Route::get('/{id}', [TaxGroupController::class, 'show']);
+            Route::put('/{id}', [TaxGroupController::class, 'update']);
+            Route::delete('/{id}', [TaxGroupController::class, 'destroy']);
+            Route::post('/{id}/attach-tax-rate', [TaxGroupController::class, 'attachTaxRate']);
+            Route::delete('/{id}/detach-tax-rate/{taxRateId}', [TaxGroupController::class, 'detachTaxRate']);
+        });
+
+        // Tax Exemptions
+        Route::prefix('tax-exemptions')->group(function () {
+            Route::get('/', [TaxExemptionController::class, 'index']);
+            Route::post('/', [TaxExemptionController::class, 'store']);
+            Route::get('/active', [TaxExemptionController::class, 'active']);
+            Route::get('/by-entity', [TaxExemptionController::class, 'byEntity']);
+            Route::get('/{id}', [TaxExemptionController::class, 'show']);
+            Route::put('/{id}', [TaxExemptionController::class, 'update']);
+            Route::delete('/{id}', [TaxExemptionController::class, 'destroy']);
+        });
+
+        // Tax Jurisdictions
+        Route::prefix('tax-jurisdictions')->group(function () {
+            Route::get('/', [TaxJurisdictionController::class, 'index']);
+            Route::post('/', [TaxJurisdictionController::class, 'store']);
+            Route::get('/active', [TaxJurisdictionController::class, 'active']);
+            Route::get('/find-by-location', [TaxJurisdictionController::class, 'findByLocation']);
+            Route::get('/{id}', [TaxJurisdictionController::class, 'show']);
+            Route::put('/{id}', [TaxJurisdictionController::class, 'update']);
+            Route::delete('/{id}', [TaxJurisdictionController::class, 'destroy']);
+        });
+
+        // Tax Calculations
+        Route::prefix('calculations')->group(function () {
+            Route::post('/calculate', [TaxCalculationController::class, 'calculate']);
+            Route::post('/calculate-and-save', [TaxCalculationController::class, 'calculateAndSave']);
+            Route::get('/history', [TaxCalculationController::class, 'history']);
+            Route::get('/summary', [TaxCalculationController::class, 'summary']);
+            Route::get('/breakdown', [TaxCalculationController::class, 'breakdown']);
+        });
+    });
+
+    // Notification Routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread-count', [NotificationController::class, 'unreadCount']);
+        Route::post('/{notificationId}/mark-as-read', [NotificationController::class, 'markAsRead']);
+        Route::post('/mark-all-as-read', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/preferences', [NotificationController::class, 'getPreferences']);
+        Route::put('/preferences', [NotificationController::class, 'updatePreferences']);
+    });
+
+    // Push Notification Routes
+    Route::prefix('push')->group(function () {
+        Route::get('/public-key', [PushSubscriptionController::class, 'getPublicKey']);
+        Route::post('/subscribe', [PushSubscriptionController::class, 'subscribe']);
+        Route::post('/unsubscribe', [PushSubscriptionController::class, 'unsubscribe']);
+        Route::post('/test', [PushSubscriptionController::class, 'test']);
     });
 });
