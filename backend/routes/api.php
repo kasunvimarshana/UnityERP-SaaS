@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Invoice\InvoiceController;
 use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\POS\POSSessionController;
 use App\Http\Controllers\Api\POS\POSTransactionController;
+use App\Http\Controllers\Api\IAM\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,18 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
         Route::post('/logout-all', [AuthController::class, 'logoutAll']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
+    });
+    
+    // IAM Routes
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('/search', [UserController::class, 'search']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::put('/{id}', [UserController::class, 'update']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
+        Route::post('/{id}/restore', [UserController::class, 'restore']);
+        Route::post('/{id}/roles', [UserController::class, 'assignRoles']);
     });
     
     // Product Management Routes
