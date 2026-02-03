@@ -20,6 +20,10 @@ use App\Http\Controllers\Api\POS\POSTransactionController;
 use App\Http\Controllers\Api\IAM\UserController;
 use App\Http\Controllers\Api\IAM\RoleController;
 use App\Http\Controllers\Api\IAM\PermissionController;
+use App\Http\Controllers\Api\MasterData\CurrencyController;
+use App\Http\Controllers\Api\MasterData\TaxRateController;
+use App\Http\Controllers\Api\MasterData\UnitOfMeasureController;
+use App\Http\Controllers\Api\MasterData\CountryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,6 +95,48 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
         Route::get('/{id}', [PermissionController::class, 'show']);
         Route::put('/{id}', [PermissionController::class, 'update']);
         Route::delete('/{id}', [PermissionController::class, 'destroy']);
+    });
+    
+    // Master Data Routes
+    Route::prefix('master-data')->group(function () {
+        // Currencies
+        Route::prefix('currencies')->group(function () {
+            Route::get('/', [CurrencyController::class, 'index']);
+            Route::post('/', [CurrencyController::class, 'store']);
+            Route::get('/active', [CurrencyController::class, 'active']);
+            Route::get('/base', [CurrencyController::class, 'base']);
+            Route::get('/{code}', [CurrencyController::class, 'show']);
+            Route::put('/{code}', [CurrencyController::class, 'update']);
+            Route::delete('/{code}', [CurrencyController::class, 'destroy']);
+        });
+
+        // Tax Rates
+        Route::prefix('tax-rates')->group(function () {
+            Route::get('/', [TaxRateController::class, 'index']);
+            Route::post('/', [TaxRateController::class, 'store']);
+            Route::get('/active', [TaxRateController::class, 'active']);
+            Route::get('/valid-on', [TaxRateController::class, 'validOn']);
+            Route::get('/{id}', [TaxRateController::class, 'show']);
+            Route::put('/{id}', [TaxRateController::class, 'update']);
+            Route::delete('/{id}', [TaxRateController::class, 'destroy']);
+        });
+
+        // Units of Measure
+        Route::prefix('units')->group(function () {
+            Route::get('/', [UnitOfMeasureController::class, 'index']);
+            Route::post('/', [UnitOfMeasureController::class, 'store']);
+            Route::get('/by-type/{type}', [UnitOfMeasureController::class, 'byType']);
+            Route::get('/base-units', [UnitOfMeasureController::class, 'baseUnits']);
+            Route::get('/{id}', [UnitOfMeasureController::class, 'show']);
+            Route::put('/{id}', [UnitOfMeasureController::class, 'update']);
+            Route::delete('/{id}', [UnitOfMeasureController::class, 'destroy']);
+        });
+
+        // Countries
+        Route::prefix('countries')->group(function () {
+            Route::get('/', [CountryController::class, 'index']);
+            Route::get('/{code}', [CountryController::class, 'show']);
+        });
     });
     
     // Product Management Routes
