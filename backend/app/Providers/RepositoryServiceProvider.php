@@ -25,6 +25,60 @@ use App\Modules\MasterData\Repositories\CurrencyRepository;
 use App\Modules\MasterData\Repositories\UnitOfMeasureRepository;
 use App\Modules\MasterData\Repositories\TaxRateRepository;
 
+// CRM Repositories
+use App\Modules\CRM\Repositories\CustomerRepositoryInterface;
+use App\Modules\CRM\Repositories\CustomerRepository;
+use App\Modules\CRM\Repositories\ContactRepositoryInterface;
+use App\Modules\CRM\Repositories\ContactRepository;
+use App\Modules\CRM\Repositories\LeadRepositoryInterface;
+use App\Modules\CRM\Repositories\LeadRepository;
+use App\Modules\CRM\Models\Customer;
+use App\Modules\CRM\Models\Contact;
+use App\Modules\CRM\Models\Lead;
+
+// Procurement Repositories
+use App\Modules\Procurement\Repositories\VendorRepositoryInterface;
+use App\Modules\Procurement\Repositories\VendorRepository;
+use App\Modules\Procurement\Repositories\PurchaseOrderRepositoryInterface;
+use App\Modules\Procurement\Repositories\PurchaseOrderRepository;
+use App\Modules\Procurement\Repositories\PurchaseReceiptRepositoryInterface;
+use App\Modules\Procurement\Repositories\PurchaseReceiptRepository;
+use App\Modules\Procurement\Models\Vendor;
+use App\Modules\Procurement\Models\PurchaseOrder;
+use App\Modules\Procurement\Models\PurchaseReceipt;
+
+// Sales Repositories
+use App\Modules\Sales\Repositories\QuoteRepositoryInterface;
+use App\Modules\Sales\Repositories\QuoteRepository;
+use App\Modules\Sales\Repositories\SalesOrderRepositoryInterface;
+use App\Modules\Sales\Repositories\SalesOrderRepository;
+use App\Modules\Sales\Models\Quote;
+use App\Modules\Sales\Models\SalesOrder;
+
+// Invoice Repositories
+use App\Modules\Invoice\Repositories\InvoiceRepositoryInterface;
+use App\Modules\Invoice\Repositories\InvoiceRepository;
+use App\Modules\Invoice\Repositories\InvoicePaymentRepositoryInterface;
+use App\Modules\Invoice\Repositories\InvoicePaymentRepository;
+use App\Modules\Invoice\Models\Invoice;
+use App\Modules\Invoice\Models\InvoicePayment;
+
+// Payment Repositories
+use App\Modules\Payment\Repositories\PaymentRepositoryInterface;
+use App\Modules\Payment\Repositories\PaymentRepository;
+use App\Modules\Payment\Repositories\PaymentMethodRepositoryInterface;
+use App\Modules\Payment\Repositories\PaymentMethodRepository;
+use App\Modules\Payment\Models\Payment;
+use App\Modules\Payment\Models\PaymentMethod;
+
+// POS Repositories
+use App\Modules\POS\Repositories\POSSessionRepositoryInterface;
+use App\Modules\POS\Repositories\POSSessionRepository;
+use App\Modules\POS\Repositories\POSTransactionRepositoryInterface;
+use App\Modules\POS\Repositories\POSTransactionRepository;
+use App\Modules\POS\Models\POSSession;
+use App\Modules\POS\Models\POSTransaction;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -58,6 +112,68 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->singleton(TaxRateRepository::class, function ($app) {
             return new TaxRateRepository(new TaxRate());
+        });
+
+        // CRM Repositories
+        $this->app->bind(CustomerRepositoryInterface::class, function ($app) {
+            return new CustomerRepository(new Customer());
+        });
+
+        $this->app->bind(ContactRepositoryInterface::class, function ($app) {
+            return new ContactRepository(new Contact());
+        });
+
+        $this->app->bind(LeadRepositoryInterface::class, function ($app) {
+            return new LeadRepository(new Lead());
+        });
+
+        // Procurement Repositories
+        $this->app->bind(VendorRepositoryInterface::class, function ($app) {
+            return new VendorRepository(new Vendor());
+        });
+
+        $this->app->bind(PurchaseOrderRepositoryInterface::class, function ($app) {
+            return new PurchaseOrderRepository(new PurchaseOrder());
+        });
+
+        $this->app->bind(PurchaseReceiptRepositoryInterface::class, function ($app) {
+            return new PurchaseReceiptRepository(new PurchaseReceipt());
+        });
+
+        // Sales Repositories
+        $this->app->bind(QuoteRepositoryInterface::class, function ($app) {
+            return new QuoteRepository(new Quote());
+        });
+
+        $this->app->bind(SalesOrderRepositoryInterface::class, function ($app) {
+            return new SalesOrderRepository(new SalesOrder());
+        });
+
+        // Invoice Repositories
+        $this->app->bind(InvoiceRepositoryInterface::class, function ($app) {
+            return new InvoiceRepository(new Invoice());
+        });
+
+        $this->app->bind(InvoicePaymentRepositoryInterface::class, function ($app) {
+            return new InvoicePaymentRepository(new InvoicePayment());
+        });
+
+        // Payment Repositories
+        $this->app->bind(PaymentRepositoryInterface::class, function ($app) {
+            return new PaymentRepository(new Payment());
+        });
+
+        $this->app->bind(PaymentMethodRepositoryInterface::class, function ($app) {
+            return new PaymentMethodRepository(new PaymentMethod());
+        });
+
+        // POS Repositories
+        $this->app->bind(POSSessionRepositoryInterface::class, function ($app) {
+            return new POSSessionRepository(new POSSession());
+        });
+
+        $this->app->bind(POSTransactionRepositoryInterface::class, function ($app) {
+            return new POSTransactionRepository(new POSTransaction());
         });
     }
 

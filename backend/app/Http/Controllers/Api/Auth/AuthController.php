@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\UserResource;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\ForgotPasswordRequest;
@@ -41,14 +42,7 @@ class AuthController extends BaseController
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->successResponse([
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'tenant_id' => $user->tenant_id,
-                    'organization_id' => $user->organization_id,
-                    'branch_id' => $user->branch_id,
-                ],
+                'user' => new UserResource($user),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ], 'User registered successfully', 201);
@@ -87,14 +81,7 @@ class AuthController extends BaseController
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->successResponse([
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'tenant_id' => $user->tenant_id,
-                    'organization_id' => $user->organization_id,
-                    'branch_id' => $user->branch_id,
-                ],
+                'user' => new UserResource($user),
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ], 'Login successful');
@@ -149,23 +136,12 @@ class AuthController extends BaseController
     {
         try {
             $user = $request->user();
-            $user->load(['tenant', 'organization', 'branch', 'roles', 'permissions']);
+            $user->load(['tenant', 'organization', 'branch', 'roles']);
 
-            return $this->successResponse([
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'tenant_id' => $user->tenant_id,
-                    'organization_id' => $user->organization_id,
-                    'branch_id' => $user->branch_id,
-                    'tenant' => $user->tenant,
-                    'organization' => $user->organization,
-                    'branch' => $user->branch,
-                    'roles' => $user->roles->pluck('name'),
-                    'permissions' => $user->getAllPermissions()->pluck('name'),
-                ],
-            ], 'User information retrieved successfully');
+            return $this->successResponse(
+                new UserResource($user),
+                'User information retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve user information', [$e->getMessage()], 500);
         }
