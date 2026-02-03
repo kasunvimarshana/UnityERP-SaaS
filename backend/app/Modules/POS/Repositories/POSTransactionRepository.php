@@ -50,12 +50,24 @@ class POSTransactionRepository extends BaseRepository implements POSTransactionR
     {
         $transactions = $this->model->where('session_id', $sessionId)
             ->where('status', 'completed')
+            ->with('paymentMethod')
             ->get();
 
+        $totalSales = $transactions->sum('total_amount');
+        
+        // Calculate totals by payment method type dynamically
+        $totalCash = $transactions->filter(function ($t) {
+            return $t->paymentMethod && $t->paymentMethod->type === 'cash';
+        })->sum('total_amount');
+        
+        $totalCard = $transactions->filter(function ($t) {
+            return $t->paymentMethod && in_array($t->paymentMethod->type, ['credit_card', 'debit_card']);
+        })->sum('total_amount');
+
         return [
-            'total_sales' => (string) $transactions->sum('total_amount'),
-            'total_cash' => (string) $transactions->where('payment_method_id', 1)->sum('total_amount'), // Assuming 1 is cash
-            'total_card' => (string) $transactions->where('payment_method_id', 2)->sum('total_amount'), // Assuming 2 is card
+            'total_sales' => (string) $totalSales,
+            'total_cash' => (string) $totalCash,
+            'total_card' => (string) $totalCard,
             'transaction_count' => $transactions->count(),
         ];
     }
