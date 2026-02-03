@@ -25,6 +25,17 @@ use App\Modules\MasterData\Repositories\CurrencyRepository;
 use App\Modules\MasterData\Repositories\UnitOfMeasureRepository;
 use App\Modules\MasterData\Repositories\TaxRateRepository;
 
+// CRM Repositories
+use App\Modules\CRM\Repositories\CustomerRepositoryInterface;
+use App\Modules\CRM\Repositories\CustomerRepository;
+use App\Modules\CRM\Repositories\ContactRepositoryInterface;
+use App\Modules\CRM\Repositories\ContactRepository;
+use App\Modules\CRM\Repositories\LeadRepositoryInterface;
+use App\Modules\CRM\Repositories\LeadRepository;
+use App\Modules\CRM\Models\Customer;
+use App\Modules\CRM\Models\Contact;
+use App\Modules\CRM\Models\Lead;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -58,6 +69,19 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->singleton(TaxRateRepository::class, function ($app) {
             return new TaxRateRepository(new TaxRate());
+        });
+
+        // CRM Repositories
+        $this->app->bind(CustomerRepositoryInterface::class, function ($app) {
+            return new CustomerRepository(new Customer());
+        });
+
+        $this->app->bind(ContactRepositoryInterface::class, function ($app) {
+            return new ContactRepository(new Contact());
+        });
+
+        $this->app->bind(LeadRepositoryInterface::class, function ($app) {
+            return new LeadRepository(new Lead());
         });
     }
 

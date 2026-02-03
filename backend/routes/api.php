@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
+use App\Http\Controllers\Api\CRM\CustomerController;
+use App\Http\Controllers\Api\CRM\ContactController;
+use App\Http\Controllers\Api\CRM\LeadController;
 
 /*
 |--------------------------------------------------------------------------
@@ -73,5 +76,41 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
         Route::get('/movements', [InventoryController::class, 'getMovements']);
         Route::get('/expiring-items', [InventoryController::class, 'getExpiringItems']);
         Route::get('/valuation', [InventoryController::class, 'calculateValuation']);
+    });
+
+    // CRM Routes
+    Route::prefix('crm')->group(function () {
+        // Customer routes
+        Route::prefix('customers')->group(function () {
+            Route::get('/', [CustomerController::class, 'index']);
+            Route::post('/', [CustomerController::class, 'store']);
+            Route::get('/search', [CustomerController::class, 'search']);
+            Route::get('/statistics', [CustomerController::class, 'statistics']);
+            Route::get('/{id}', [CustomerController::class, 'show']);
+            Route::put('/{id}', [CustomerController::class, 'update']);
+            Route::delete('/{id}', [CustomerController::class, 'destroy']);
+        });
+
+        // Contact routes
+        Route::prefix('contacts')->group(function () {
+            Route::get('/', [ContactController::class, 'index']);
+            Route::post('/', [ContactController::class, 'store']);
+            Route::get('/search', [ContactController::class, 'search']);
+            Route::get('/{id}', [ContactController::class, 'show']);
+            Route::put('/{id}', [ContactController::class, 'update']);
+            Route::delete('/{id}', [ContactController::class, 'destroy']);
+        });
+
+        // Lead routes
+        Route::prefix('leads')->group(function () {
+            Route::get('/', [LeadController::class, 'index']);
+            Route::post('/', [LeadController::class, 'store']);
+            Route::get('/search', [LeadController::class, 'search']);
+            Route::get('/statistics', [LeadController::class, 'statistics']);
+            Route::get('/{id}', [LeadController::class, 'show']);
+            Route::put('/{id}', [LeadController::class, 'update']);
+            Route::delete('/{id}', [LeadController::class, 'destroy']);
+            Route::post('/{id}/convert', [LeadController::class, 'convert']);
+        });
     });
 });

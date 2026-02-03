@@ -16,6 +16,12 @@ use App\Policies\StockLedgerPolicy;
 use App\Policies\TenantPolicy;
 use App\Policies\OrganizationPolicy;
 use App\Policies\BranchPolicy;
+use App\Policies\CustomerPolicy;
+use App\Policies\ContactPolicy;
+use App\Policies\LeadPolicy;
+use App\Modules\CRM\Models\Customer;
+use App\Modules\CRM\Models\Contact;
+use App\Modules\CRM\Models\Lead;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
@@ -38,6 +44,9 @@ class AuthServiceProvider extends ServiceProvider
         Tenant::class => TenantPolicy::class,
         Organization::class => OrganizationPolicy::class,
         Branch::class => BranchPolicy::class,
+        Customer::class => CustomerPolicy::class,
+        Contact::class => ContactPolicy::class,
+        Lead::class => LeadPolicy::class,
     ];
 
     /**
