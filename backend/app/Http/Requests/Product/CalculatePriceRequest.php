@@ -10,10 +10,13 @@ class CalculatePriceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Uses ProductPolicy to verify user can view products (required to calculate prices).
      */
     public function authorize(): bool
     {
-        return true;
+        // User must be able to view products to calculate their prices
+        return $this->user()->can('viewAny', \App\Modules\Product\Models\Product::class);
     }
 
     /**

@@ -229,27 +229,34 @@ class OrganizationPolicy
     /**
      * Check if an organization is a descendant of another organization.
      * 
+     * Uses recursive CTE query for efficient hierarchical lookup.
+     * 
      * @param Organization $organization The organization to check
      * @param int $ancestorId The potential ancestor organization ID
      * @return bool True if organization is a descendant
      */
     protected function isDescendantOf(Organization $organization, int $ancestorId): bool
     {
-        $current = $organization;
-        
-        // Traverse up the hierarchy
-        while ($current->parent_id !== null) {
-            if ($current->parent_id === $ancestorId) {
-                return true;
-            }
-            
-            // Load parent to continue traversal
-            $current = $current->parent;
-            if (!$current) {
-                break;
-            }
+        // Direct parent check
+        if ($organization->parent_id === $ancestorId) {
+            return true;
         }
         
-        return false;
+        // Use recursive query to check ancestry
+        $isDescendant = \DB::table('organizations')
+            ->whereRaw('id = ?', [$organization->id])
+            ->whereRaw('EXISTS (
+                WITH RECURSIVE org_tree AS (
+                    SELECT id, parent_id FROM organizations WHERE id = ?
+                    UNION ALL
+                    SELECT o.id, o.parent_id 
+                    FROM organizations o
+                    INNER JOIN org_tree ot ON o.id = ot.parent_id
+                )
+                SELECT 1 FROM org_tree WHERE id = ?
+            )', [$organization->id, $ancestorId])
+            ->exists();
+        
+        return $isDescendant;
     }
 }
