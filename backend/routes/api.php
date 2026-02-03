@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\Procurement\PurchaseReturnController;
 use App\Http\Controllers\Api\Sales\QuoteController;
 use App\Http\Controllers\Api\Sales\SalesOrderController;
 use App\Http\Controllers\Api\Invoice\InvoiceController;
+use App\Http\Controllers\Api\Payment\PaymentController;
+use App\Http\Controllers\Api\POS\POSSessionController;
+use App\Http\Controllers\Api\POS\POSTransactionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -200,5 +203,41 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
         Route::post('/{id}/approve', [InvoiceController::class, 'approve']);
         Route::post('/{id}/payments', [InvoiceController::class, 'recordPayment']);
         Route::post('/from-sales-order/{salesOrderId}', [InvoiceController::class, 'createFromSalesOrder']);
+    });
+    
+    // Payment Management Routes
+    Route::prefix('payments')->group(function () {
+        Route::get('/', [PaymentController::class, 'index']);
+        Route::post('/', [PaymentController::class, 'store']);
+        Route::get('/search', [PaymentController::class, 'search']);
+        Route::get('/statistics', [PaymentController::class, 'statistics']);
+        Route::get('/{id}', [PaymentController::class, 'show']);
+        Route::put('/{id}', [PaymentController::class, 'update']);
+        Route::delete('/{id}', [PaymentController::class, 'destroy']);
+        Route::post('/{id}/reconcile', [PaymentController::class, 'reconcile']);
+        Route::post('/{id}/unreconcile', [PaymentController::class, 'unreconcile']);
+        Route::post('/{id}/complete', [PaymentController::class, 'complete']);
+        Route::post('/{id}/cancel', [PaymentController::class, 'cancel']);
+    });
+    
+    // POS Management Routes
+    Route::prefix('pos')->group(function () {
+        // POS Sessions
+        Route::prefix('sessions')->group(function () {
+            Route::get('/', [POSSessionController::class, 'index']);
+            Route::post('/', [POSSessionController::class, 'store']);
+            Route::get('/current', [POSSessionController::class, 'current']);
+            Route::get('/{id}', [POSSessionController::class, 'show']);
+            Route::post('/{id}/close', [POSSessionController::class, 'close']);
+        });
+        
+        // POS Transactions
+        Route::prefix('transactions')->group(function () {
+            Route::get('/', [POSTransactionController::class, 'index']);
+            Route::post('/', [POSTransactionController::class, 'store']);
+            Route::get('/{id}', [POSTransactionController::class, 'show']);
+            Route::post('/{id}/complete', [POSTransactionController::class, 'complete']);
+            Route::post('/{id}/receipt', [POSTransactionController::class, 'generateReceipt']);
+        });
     });
 });

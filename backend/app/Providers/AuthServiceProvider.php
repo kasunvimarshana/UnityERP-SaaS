@@ -36,6 +36,11 @@ use App\Policies\InvoicePolicy;
 use App\Modules\Sales\Models\Quote;
 use App\Modules\Sales\Models\SalesOrder;
 use App\Modules\Invoice\Models\Invoice;
+use App\Modules\Payment\Models\Payment;
+use App\Modules\Payment\Policies\PaymentPolicy;
+use App\Modules\POS\Models\POSSession;
+use App\Modules\POS\Models\POSTransaction;
+use App\Modules\POS\Policies\POSPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
@@ -68,6 +73,9 @@ class AuthServiceProvider extends ServiceProvider
         Quote::class => QuotePolicy::class,
         SalesOrder::class => SalesOrderPolicy::class,
         Invoice::class => InvoicePolicy::class,
+        Payment::class => PaymentPolicy::class,
+        POSSession::class => POSPolicy::class,
+        POSTransaction::class => POSPolicy::class,
     ];
 
     /**

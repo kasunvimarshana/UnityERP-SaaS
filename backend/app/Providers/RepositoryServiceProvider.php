@@ -63,6 +63,22 @@ use App\Modules\Invoice\Repositories\InvoicePaymentRepository;
 use App\Modules\Invoice\Models\Invoice;
 use App\Modules\Invoice\Models\InvoicePayment;
 
+// Payment Repositories
+use App\Modules\Payment\Repositories\PaymentRepositoryInterface;
+use App\Modules\Payment\Repositories\PaymentRepository;
+use App\Modules\Payment\Repositories\PaymentMethodRepositoryInterface;
+use App\Modules\Payment\Repositories\PaymentMethodRepository;
+use App\Modules\Payment\Models\Payment;
+use App\Modules\Payment\Models\PaymentMethod;
+
+// POS Repositories
+use App\Modules\POS\Repositories\POSSessionRepositoryInterface;
+use App\Modules\POS\Repositories\POSSessionRepository;
+use App\Modules\POS\Repositories\POSTransactionRepositoryInterface;
+use App\Modules\POS\Repositories\POSTransactionRepository;
+use App\Modules\POS\Models\POSSession;
+use App\Modules\POS\Models\POSTransaction;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -140,6 +156,24 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(InvoicePaymentRepositoryInterface::class, function ($app) {
             return new InvoicePaymentRepository(new InvoicePayment());
+        });
+
+        // Payment Repositories
+        $this->app->bind(PaymentRepositoryInterface::class, function ($app) {
+            return new PaymentRepository(new Payment());
+        });
+
+        $this->app->bind(PaymentMethodRepositoryInterface::class, function ($app) {
+            return new PaymentMethodRepository(new PaymentMethod());
+        });
+
+        // POS Repositories
+        $this->app->bind(POSSessionRepositoryInterface::class, function ($app) {
+            return new POSSessionRepository(new POSSession());
+        });
+
+        $this->app->bind(POSTransactionRepositoryInterface::class, function ($app) {
+            return new POSTransactionRepository(new POSTransaction());
         });
     }
 
