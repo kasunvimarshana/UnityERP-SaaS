@@ -92,6 +92,17 @@ use App\Modules\Manufacturing\Repositories\WorkOrderRepository;
 use App\Modules\Manufacturing\Models\BillOfMaterial;
 use App\Modules\Manufacturing\Models\WorkOrder;
 
+// Warehouse Repositories
+use App\Modules\Warehouse\Repositories\WarehouseTransferRepositoryInterface;
+use App\Modules\Warehouse\Repositories\WarehouseTransferRepository;
+use App\Modules\Warehouse\Repositories\WarehousePickingRepositoryInterface;
+use App\Modules\Warehouse\Repositories\WarehousePickingRepository;
+use App\Modules\Warehouse\Repositories\WarehousePutawayRepositoryInterface;
+use App\Modules\Warehouse\Repositories\WarehousePutawayRepository;
+use App\Modules\Warehouse\Models\WarehouseTransfer;
+use App\Modules\Warehouse\Models\WarehousePicking;
+use App\Modules\Warehouse\Models\WarehousePutaway;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -199,6 +210,19 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(WorkOrderRepositoryInterface::class, function ($app) {
             return new WorkOrderRepository(new WorkOrder());
+        });
+
+        // Warehouse Repositories
+        $this->app->bind(WarehouseTransferRepositoryInterface::class, function ($app) {
+            return new WarehouseTransferRepository(new WarehouseTransfer());
+        });
+
+        $this->app->bind(WarehousePickingRepositoryInterface::class, function ($app) {
+            return new WarehousePickingRepository(new WarehousePicking());
+        });
+
+        $this->app->bind(WarehousePutawayRepositoryInterface::class, function ($app) {
+            return new WarehousePutawayRepository(new WarehousePutaway());
         });
     }
 

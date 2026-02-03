@@ -26,6 +26,9 @@ use App\Http\Controllers\Api\MasterData\UnitOfMeasureController;
 use App\Http\Controllers\Api\MasterData\CountryController;
 use App\Http\Controllers\Api\Manufacturing\BillOfMaterialController;
 use App\Http\Controllers\Api\Manufacturing\WorkOrderController;
+use App\Http\Controllers\Api\Warehouse\WarehouseTransferController;
+use App\Http\Controllers\Api\Warehouse\WarehousePickingController;
+use App\Http\Controllers\Api\Warehouse\WarehousePutawayController;
 
 /*
 |--------------------------------------------------------------------------
@@ -369,6 +372,53 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::post('/{id}/start-production', [WorkOrderController::class, 'startProduction']);
             Route::post('/{id}/complete-production', [WorkOrderController::class, 'completeProduction']);
             Route::post('/{id}/cancel', [WorkOrderController::class, 'cancel']);
+        });
+    });
+
+    // Warehouse Management Routes
+    Route::prefix('warehouse')->group(function () {
+        // Warehouse Transfer routes
+        Route::prefix('transfers')->group(function () {
+            Route::get('/', [WarehouseTransferController::class, 'index']);
+            Route::post('/', [WarehouseTransferController::class, 'store']);
+            Route::get('/pending', [WarehouseTransferController::class, 'pending']);
+            Route::get('/in-transit', [WarehouseTransferController::class, 'inTransit']);
+            Route::get('/{id}', [WarehouseTransferController::class, 'show']);
+            Route::put('/{id}', [WarehouseTransferController::class, 'update']);
+            Route::delete('/{id}', [WarehouseTransferController::class, 'destroy']);
+            Route::post('/{id}/approve', [WarehouseTransferController::class, 'approve']);
+            Route::post('/{id}/ship', [WarehouseTransferController::class, 'ship']);
+            Route::post('/{id}/receive', [WarehouseTransferController::class, 'receive']);
+            Route::post('/{id}/cancel', [WarehouseTransferController::class, 'cancel']);
+        });
+
+        // Warehouse Picking routes
+        Route::prefix('pickings')->group(function () {
+            Route::get('/', [WarehousePickingController::class, 'index']);
+            Route::post('/', [WarehousePickingController::class, 'store']);
+            Route::get('/pending', [WarehousePickingController::class, 'pending']);
+            Route::get('/efficiency', [WarehousePickingController::class, 'efficiency']);
+            Route::get('/{id}', [WarehousePickingController::class, 'show']);
+            Route::delete('/{id}', [WarehousePickingController::class, 'destroy']);
+            Route::post('/{id}/assign', [WarehousePickingController::class, 'assign']);
+            Route::post('/{id}/start', [WarehousePickingController::class, 'start']);
+            Route::post('/{id}/pick', [WarehousePickingController::class, 'pick']);
+            Route::post('/{id}/complete', [WarehousePickingController::class, 'complete']);
+            Route::post('/{id}/cancel', [WarehousePickingController::class, 'cancel']);
+        });
+
+        // Warehouse Putaway routes
+        Route::prefix('putaways')->group(function () {
+            Route::get('/', [WarehousePutawayController::class, 'index']);
+            Route::post('/', [WarehousePutawayController::class, 'store']);
+            Route::get('/pending', [WarehousePutawayController::class, 'pending']);
+            Route::get('/{id}', [WarehousePutawayController::class, 'show']);
+            Route::delete('/{id}', [WarehousePutawayController::class, 'destroy']);
+            Route::post('/{id}/assign', [WarehousePutawayController::class, 'assign']);
+            Route::post('/{id}/start', [WarehousePutawayController::class, 'start']);
+            Route::post('/{id}/putaway', [WarehousePutawayController::class, 'putaway']);
+            Route::post('/{id}/complete', [WarehousePutawayController::class, 'complete']);
+            Route::post('/{id}/cancel', [WarehousePutawayController::class, 'cancel']);
         });
     });
 });
