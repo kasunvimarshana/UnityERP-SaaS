@@ -18,6 +18,8 @@ use App\Http\Controllers\Api\Payment\PaymentController;
 use App\Http\Controllers\Api\POS\POSSessionController;
 use App\Http\Controllers\Api\POS\POSTransactionController;
 use App\Http\Controllers\Api\IAM\UserController;
+use App\Http\Controllers\Api\IAM\RoleController;
+use App\Http\Controllers\Api\IAM\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,6 +73,24 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
         Route::delete('/{id}', [UserController::class, 'destroy']);
         Route::post('/{id}/restore', [UserController::class, 'restore']);
         Route::post('/{id}/roles', [UserController::class, 'assignRoles']);
+    });
+
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'index']);
+        Route::post('/', [RoleController::class, 'store']);
+        Route::get('/{id}', [RoleController::class, 'show']);
+        Route::put('/{id}', [RoleController::class, 'update']);
+        Route::delete('/{id}', [RoleController::class, 'destroy']);
+        Route::post('/{id}/permissions', [RoleController::class, 'assignPermissions']);
+    });
+
+    Route::prefix('permissions')->group(function () {
+        Route::get('/', [PermissionController::class, 'index']);
+        Route::post('/', [PermissionController::class, 'store']);
+        Route::get('/by-module', [PermissionController::class, 'byModule']);
+        Route::get('/{id}', [PermissionController::class, 'show']);
+        Route::put('/{id}', [PermissionController::class, 'update']);
+        Route::delete('/{id}', [PermissionController::class, 'destroy']);
     });
     
     // Product Management Routes
