@@ -51,9 +51,9 @@ class PricingCalculationController extends BaseController
                 $context
             );
 
-            return $this->sendResponse($pricing, 'Price calculated successfully');
+            return $this->successResponse($pricing, 'Price calculated successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Failed to calculate price: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to calculate price: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -85,9 +85,9 @@ class PricingCalculationController extends BaseController
                 $context
             );
 
-            return $this->sendResponse($pricing, 'Bulk prices calculated successfully');
+            return $this->successResponse($pricing, 'Bulk prices calculated successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Failed to calculate bulk prices: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to calculate bulk prices: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -131,9 +131,9 @@ class PricingCalculationController extends BaseController
                 ->byPriority('desc')
                 ->get();
 
-            return $this->sendResponse($rules, 'Applicable pricing rules retrieved successfully');
+            return $this->successResponse($rules, 'Applicable pricing rules retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Failed to get applicable rules: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to get applicable rules: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -154,9 +154,9 @@ class PricingCalculationController extends BaseController
                 ->orderByDisplay()
                 ->get();
 
-            return $this->sendResponse($tiers, 'Discount tiers retrieved successfully');
+            return $this->successResponse($tiers, 'Discount tiers retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Failed to get discount tiers: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to get discount tiers: ' . $e->getMessage(), [], 500);
         }
     }
 }

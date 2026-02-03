@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Pricing\Services;
 
-use App\Models\Product;
+use App\Modules\Product\Models\Product;
 use App\Models\PricingRule;
 use App\Models\DiscountTier;
 use App\Core\DTOs\Product\ProductPricingDTO;
@@ -35,8 +35,8 @@ class PricingService
             throw new ServiceException("Product not found: {$productId}");
         }
 
-        // Get base price
-        $basePrice = $product->selling_price;
+        // Get base price (ensure it's a float)
+        $basePrice = (float) $product->selling_price;
         
         // Get applicable pricing rules
         $applicableRules = $this->getApplicablePricingRules($product, $quantity, $context);
@@ -57,7 +57,7 @@ class PricingService
             $discountedPrice = $this->applyProductDiscount(
                 $discountedPrice,
                 $product->selling_discount_type,
-                $product->selling_discount_value
+                (float) $product->selling_discount_value
             );
         }
         
@@ -66,14 +66,14 @@ class PricingService
             productId: $productId,
             quantity: $quantity,
             basePrice: $basePrice,
-            buyingPrice: $product->buying_price,
+            buyingPrice: $product->buying_price ? (float) $product->buying_price : null,
             discountType: $applicableTier ? $applicableTier->discount_type : $product->selling_discount_type,
-            discountValue: $applicableTier ? $applicableTier->discount_value : $product->selling_discount_value,
+            discountValue: $applicableTier ? (float) $applicableTier->discount_value : (float) $product->selling_discount_value,
             taxRateId: $product->tax_rate_id,
-            taxRate: $product->taxRate ? $product->taxRate->rate : null,
+            taxRate: $product->taxRate ? (float) $product->taxRate->rate : null,
             isTaxInclusive: $product->is_tax_inclusive,
             profitMarginType: $product->profit_margin_type,
-            profitMarginValue: $product->profit_margin_value,
+            profitMarginValue: $product->profit_margin_value ? (float) $product->profit_margin_value : null,
             context: array_merge($context, [
                 'applied_rules' => $applicableRules->pluck('id')->toArray(),
                 'applied_tier' => $applicableTier ? $applicableTier->id : null,

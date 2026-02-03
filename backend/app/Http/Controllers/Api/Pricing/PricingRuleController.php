@@ -49,7 +49,7 @@ class PricingRuleController extends BaseController
 
         $pricingRules = $query->paginate($request->input('per_page', 15));
 
-        return $this->sendResponse($pricingRules, 'Pricing rules retrieved successfully');
+        return $this->successResponse($pricingRules, 'Pricing rules retrieved successfully');
     }
 
     /**
@@ -94,14 +94,14 @@ class PricingRuleController extends BaseController
 
             DB::commit();
 
-            return $this->sendResponse(
+            return $this->successResponse(
                 $pricingRule->load(['product', 'category', 'customer']),
                 'Pricing rule created successfully',
                 201
             );
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->sendError('Failed to create pricing rule: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to create pricing rule: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -113,7 +113,7 @@ class PricingRuleController extends BaseController
         $pricingRule = PricingRule::with(['product', 'category', 'customer', 'discountTiers'])
             ->findOrFail($id);
 
-        return $this->sendResponse($pricingRule, 'Pricing rule retrieved successfully');
+        return $this->successResponse($pricingRule, 'Pricing rule retrieved successfully');
     }
 
     /**
@@ -158,13 +158,13 @@ class PricingRuleController extends BaseController
 
             DB::commit();
 
-            return $this->sendResponse(
+            return $this->successResponse(
                 $pricingRule->fresh(['product', 'category', 'customer']),
                 'Pricing rule updated successfully'
             );
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->sendError('Failed to update pricing rule: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to update pricing rule: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -180,10 +180,10 @@ class PricingRuleController extends BaseController
             $pricingRule->delete();
             DB::commit();
 
-            return $this->sendResponse(null, 'Pricing rule deleted successfully');
+            return $this->successResponse(null, 'Pricing rule deleted successfully');
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->sendError('Failed to delete pricing rule: ' . $e->getMessage(), 500);
+            return $this->errorResponse('Failed to delete pricing rule: ' . $e->getMessage(), [], 500);
         }
     }
 
@@ -199,7 +199,7 @@ class PricingRuleController extends BaseController
             'updated_by' => auth()->id(),
         ]);
 
-        return $this->sendResponse($pricingRule, 'Pricing rule activated successfully');
+        return $this->successResponse($pricingRule, 'Pricing rule activated successfully');
     }
 
     /**
@@ -214,6 +214,6 @@ class PricingRuleController extends BaseController
             'updated_by' => auth()->id(),
         ]);
 
-        return $this->sendResponse($pricingRule, 'Pricing rule deactivated successfully');
+        return $this->successResponse($pricingRule, 'Pricing rule deactivated successfully');
     }
 }
