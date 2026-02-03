@@ -7,6 +7,10 @@ use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\CRM\CustomerController;
 use App\Http\Controllers\Api\CRM\ContactController;
 use App\Http\Controllers\Api\CRM\LeadController;
+use App\Http\Controllers\Api\Procurement\VendorController;
+use App\Http\Controllers\Api\Procurement\PurchaseOrderController;
+use App\Http\Controllers\Api\Procurement\PurchaseReceiptController;
+use App\Http\Controllers\Api\Procurement\PurchaseReturnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +115,50 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::put('/{id}', [LeadController::class, 'update']);
             Route::delete('/{id}', [LeadController::class, 'destroy']);
             Route::post('/{id}/convert', [LeadController::class, 'convert']);
+        });
+    });
+
+    // Procurement Routes
+    Route::prefix('procurement')->group(function () {
+        // Vendor routes
+        Route::prefix('vendors')->group(function () {
+            Route::get('/', [VendorController::class, 'index']);
+            Route::post('/', [VendorController::class, 'store']);
+            Route::get('/search', [VendorController::class, 'search']);
+            Route::get('/statistics', [VendorController::class, 'statistics']);
+            Route::get('/{id}', [VendorController::class, 'show']);
+            Route::put('/{id}', [VendorController::class, 'update']);
+            Route::delete('/{id}', [VendorController::class, 'destroy']);
+        });
+
+        // Purchase Order routes
+        Route::prefix('purchase-orders')->group(function () {
+            Route::get('/', [PurchaseOrderController::class, 'index']);
+            Route::post('/', [PurchaseOrderController::class, 'store']);
+            Route::get('/{id}', [PurchaseOrderController::class, 'show']);
+            Route::put('/{id}', [PurchaseOrderController::class, 'update']);
+            Route::delete('/{id}', [PurchaseOrderController::class, 'destroy']);
+            Route::post('/{id}/approve', [PurchaseOrderController::class, 'approve']);
+            Route::post('/{id}/reject', [PurchaseOrderController::class, 'reject']);
+            Route::post('/{id}/cancel', [PurchaseOrderController::class, 'cancel']);
+        });
+
+        // Purchase Receipt routes (GRN)
+        Route::prefix('purchase-receipts')->group(function () {
+            Route::get('/', [PurchaseReceiptController::class, 'index']);
+            Route::post('/', [PurchaseReceiptController::class, 'store']);
+            Route::get('/{id}', [PurchaseReceiptController::class, 'show']);
+            Route::delete('/{id}', [PurchaseReceiptController::class, 'destroy']);
+            Route::post('/{id}/accept', [PurchaseReceiptController::class, 'accept']);
+        });
+
+        // Purchase Return routes
+        Route::prefix('purchase-returns')->group(function () {
+            Route::get('/', [PurchaseReturnController::class, 'index']);
+            Route::post('/', [PurchaseReturnController::class, 'store']);
+            Route::get('/{id}', [PurchaseReturnController::class, 'show']);
+            Route::delete('/{id}', [PurchaseReturnController::class, 'destroy']);
+            Route::post('/{id}/approve', [PurchaseReturnController::class, 'approve']);
         });
     });
 });

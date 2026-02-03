@@ -36,6 +36,17 @@ use App\Modules\CRM\Models\Customer;
 use App\Modules\CRM\Models\Contact;
 use App\Modules\CRM\Models\Lead;
 
+// Procurement Repositories
+use App\Modules\Procurement\Repositories\VendorRepositoryInterface;
+use App\Modules\Procurement\Repositories\VendorRepository;
+use App\Modules\Procurement\Repositories\PurchaseOrderRepositoryInterface;
+use App\Modules\Procurement\Repositories\PurchaseOrderRepository;
+use App\Modules\Procurement\Repositories\PurchaseReceiptRepositoryInterface;
+use App\Modules\Procurement\Repositories\PurchaseReceiptRepository;
+use App\Modules\Procurement\Models\Vendor;
+use App\Modules\Procurement\Models\PurchaseOrder;
+use App\Modules\Procurement\Models\PurchaseReceipt;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -82,6 +93,19 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(LeadRepositoryInterface::class, function ($app) {
             return new LeadRepository(new Lead());
+        });
+
+        // Procurement Repositories
+        $this->app->bind(VendorRepositoryInterface::class, function ($app) {
+            return new VendorRepository(new Vendor());
+        });
+
+        $this->app->bind(PurchaseOrderRepositoryInterface::class, function ($app) {
+            return new PurchaseOrderRepository(new PurchaseOrder());
+        });
+
+        $this->app->bind(PurchaseReceiptRepositoryInterface::class, function ($app) {
+            return new PurchaseReceiptRepository(new PurchaseReceipt());
         });
     }
 

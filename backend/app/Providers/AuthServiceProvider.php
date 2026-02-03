@@ -22,6 +22,14 @@ use App\Policies\LeadPolicy;
 use App\Modules\CRM\Models\Customer;
 use App\Modules\CRM\Models\Contact;
 use App\Modules\CRM\Models\Lead;
+use App\Policies\VendorPolicy;
+use App\Policies\PurchaseOrderPolicy;
+use App\Policies\PurchaseReceiptPolicy;
+use App\Policies\PurchaseReturnPolicy;
+use App\Modules\Procurement\Models\Vendor;
+use App\Modules\Procurement\Models\PurchaseOrder;
+use App\Modules\Procurement\Models\PurchaseReceipt;
+use App\Modules\Procurement\Models\PurchaseReturn;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
@@ -47,6 +55,10 @@ class AuthServiceProvider extends ServiceProvider
         Customer::class => CustomerPolicy::class,
         Contact::class => ContactPolicy::class,
         Lead::class => LeadPolicy::class,
+        Vendor::class => VendorPolicy::class,
+        PurchaseOrder::class => PurchaseOrderPolicy::class,
+        PurchaseReceipt::class => PurchaseReceiptPolicy::class,
+        PurchaseReturn::class => PurchaseReturnPolicy::class,
     ];
 
     /**
