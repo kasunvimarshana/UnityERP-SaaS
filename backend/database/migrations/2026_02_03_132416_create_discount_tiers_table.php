@@ -20,7 +20,7 @@ return new class extends Migration
             
             // Quantity thresholds
             $table->decimal('min_quantity', 15, 4)->default(0);
-            $table->decimal('max_quantity', 15, 4')->nullable();
+            $table->decimal('max_quantity', 15, 4)->nullable();
             
             // Discount configuration
             $table->enum('discount_type', ['flat', 'percentage'])->default('percentage');
