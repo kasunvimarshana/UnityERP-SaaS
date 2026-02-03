@@ -84,6 +84,14 @@ use App\Modules\IAM\Repositories\UserRepositoryInterface;
 use App\Modules\IAM\Repositories\UserRepository;
 use App\Models\User;
 
+// Manufacturing Repositories
+use App\Modules\Manufacturing\Repositories\BillOfMaterialRepositoryInterface;
+use App\Modules\Manufacturing\Repositories\BillOfMaterialRepository;
+use App\Modules\Manufacturing\Repositories\WorkOrderRepositoryInterface;
+use App\Modules\Manufacturing\Repositories\WorkOrderRepository;
+use App\Modules\Manufacturing\Models\BillOfMaterial;
+use App\Modules\Manufacturing\Models\WorkOrder;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -183,6 +191,15 @@ class RepositoryServiceProvider extends ServiceProvider
 
         // IAM Repositories
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+
+        // Manufacturing Repositories
+        $this->app->bind(BillOfMaterialRepositoryInterface::class, function ($app) {
+            return new BillOfMaterialRepository(new BillOfMaterial());
+        });
+
+        $this->app->bind(WorkOrderRepositoryInterface::class, function ($app) {
+            return new WorkOrderRepository(new WorkOrder());
+        });
     }
 
     /**

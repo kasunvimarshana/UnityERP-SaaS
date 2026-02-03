@@ -24,6 +24,8 @@ use App\Http\Controllers\Api\MasterData\CurrencyController;
 use App\Http\Controllers\Api\MasterData\TaxRateController;
 use App\Http\Controllers\Api\MasterData\UnitOfMeasureController;
 use App\Http\Controllers\Api\MasterData\CountryController;
+use App\Http\Controllers\Api\Manufacturing\BillOfMaterialController;
+use App\Http\Controllers\Api\Manufacturing\WorkOrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -337,6 +339,36 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::delete('/{id}', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'destroy']);
             Route::post('/{id}/activate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'activate']);
             Route::post('/{id}/deactivate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'deactivate']);
+        });
+    });
+    
+    // Manufacturing Routes
+    Route::prefix('manufacturing')->group(function () {
+        // Bill of Materials (BOM)
+        Route::prefix('boms')->group(function () {
+            Route::get('/', [BillOfMaterialController::class, 'index']);
+            Route::post('/', [BillOfMaterialController::class, 'store']);
+            Route::get('/{id}', [BillOfMaterialController::class, 'show']);
+            Route::put('/{id}', [BillOfMaterialController::class, 'update']);
+            Route::delete('/{id}', [BillOfMaterialController::class, 'destroy']);
+            Route::post('/{id}/activate', [BillOfMaterialController::class, 'activate']);
+            Route::post('/{id}/deactivate', [BillOfMaterialController::class, 'deactivate']);
+            Route::get('/{id}/calculate-materials', [BillOfMaterialController::class, 'calculateMaterials']);
+            Route::get('/product/{productId}', [BillOfMaterialController::class, 'getByProduct']);
+        });
+        
+        // Work Orders
+        Route::prefix('work-orders')->group(function () {
+            Route::get('/', [WorkOrderController::class, 'index']);
+            Route::post('/', [WorkOrderController::class, 'store']);
+            Route::get('/in-progress', [WorkOrderController::class, 'inProgress']);
+            Route::get('/overdue', [WorkOrderController::class, 'overdue']);
+            Route::get('/{id}', [WorkOrderController::class, 'show']);
+            Route::put('/{id}', [WorkOrderController::class, 'update']);
+            Route::delete('/{id}', [WorkOrderController::class, 'destroy']);
+            Route::post('/{id}/start-production', [WorkOrderController::class, 'startProduction']);
+            Route::post('/{id}/complete-production', [WorkOrderController::class, 'completeProduction']);
+            Route::post('/{id}/cancel', [WorkOrderController::class, 'cancel']);
         });
     });
 });
