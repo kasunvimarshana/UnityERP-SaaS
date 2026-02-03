@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\Product;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\ProductResource;
 use App\Modules\Product\Services\ProductService;
 use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
@@ -39,7 +42,10 @@ class ProductController extends BaseController
             $perPage = $request->input('per_page', 15);
             $products = $this->productService->getAll([], $perPage);
 
-            return $this->paginatedResponse($products, 'Products retrieved successfully');
+            return $this->paginatedResponse(
+                ProductResource::collection($products),
+                'Products retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve products: ' . $e->getMessage());
         }
@@ -58,7 +64,11 @@ class ProductController extends BaseController
 
             $product = $this->productService->create($validated);
 
-            return $this->successResponse($product, 'Product created successfully', 201);
+            return $this->successResponse(
+                new ProductResource($product),
+                'Product created successfully',
+                201
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to create product: ' . $e->getMessage());
         }
@@ -75,7 +85,10 @@ class ProductController extends BaseController
         try {
             $product = $this->productService->getById($id);
 
-            return $this->successResponse($product, 'Product retrieved successfully');
+            return $this->successResponse(
+                new ProductResource($product),
+                'Product retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve product: ' . $e->getMessage(), [], 404);
         }
@@ -95,7 +108,10 @@ class ProductController extends BaseController
 
             $product = $this->productService->update($id, $validated);
 
-            return $this->successResponse($product, 'Product updated successfully');
+            return $this->successResponse(
+                new ProductResource($product),
+                'Product updated successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to update product: ' . $e->getMessage());
         }
@@ -132,7 +148,10 @@ class ProductController extends BaseController
 
             $products = $this->productService->search($query, $filters);
 
-            return $this->successResponse($products, 'Products searched successfully');
+            return $this->successResponse(
+                ProductResource::collection($products),
+                'Products searched successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to search products: ' . $e->getMessage());
         }
@@ -148,7 +167,10 @@ class ProductController extends BaseController
         try {
             $products = $this->productService->getLowStockProducts();
 
-            return $this->successResponse($products, 'Low stock products retrieved successfully');
+            return $this->successResponse(
+                ProductResource::collection($products),
+                'Low stock products retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve low stock products: ' . $e->getMessage());
         }
@@ -164,7 +186,10 @@ class ProductController extends BaseController
         try {
             $products = $this->productService->getOutOfStockProducts();
 
-            return $this->successResponse($products, 'Out of stock products retrieved successfully');
+            return $this->successResponse(
+                ProductResource::collection($products),
+                'Out of stock products retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to retrieve out of stock products: ' . $e->getMessage());
         }

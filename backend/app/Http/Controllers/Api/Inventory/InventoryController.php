@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api\Inventory;
 
 use App\Http\Controllers\BaseController;
+use App\Http\Resources\StockLedgerResource;
 use App\Modules\Inventory\Services\InventoryService;
 use App\Http\Requests\Inventory\StockInRequest;
 use App\Http\Requests\Inventory\StockOutRequest;
@@ -41,7 +44,11 @@ class InventoryController extends BaseController
 
             $ledgerEntry = $this->inventoryService->stockIn($validated);
 
-            return $this->successResponse($ledgerEntry, 'Stock IN recorded successfully', 201);
+            return $this->successResponse(
+                new StockLedgerResource($ledgerEntry),
+                'Stock IN recorded successfully',
+                201
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to record stock IN: ' . $e->getMessage());
         }
@@ -60,7 +67,11 @@ class InventoryController extends BaseController
 
             $ledgerEntry = $this->inventoryService->stockOut($validated);
 
-            return $this->successResponse($ledgerEntry, 'Stock OUT recorded successfully', 201);
+            return $this->successResponse(
+                new StockLedgerResource($ledgerEntry),
+                'Stock OUT recorded successfully',
+                201
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to record stock OUT: ' . $e->getMessage());
         }
@@ -79,7 +90,11 @@ class InventoryController extends BaseController
 
             $ledgerEntry = $this->inventoryService->stockAdjustment($validated);
 
-            return $this->successResponse($ledgerEntry, 'Stock adjustment recorded successfully', 201);
+            return $this->successResponse(
+                new StockLedgerResource($ledgerEntry),
+                'Stock adjustment recorded successfully',
+                201
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to record stock adjustment: ' . $e->getMessage());
         }
@@ -159,7 +174,10 @@ class InventoryController extends BaseController
                 $validated['branch_id'] ?? null
             );
 
-            return $this->successResponse($movements, 'Stock movements retrieved successfully');
+            return $this->successResponse(
+                StockLedgerResource::collection($movements),
+                'Stock movements retrieved successfully'
+            );
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to get stock movements: ' . $e->getMessage());
         }
