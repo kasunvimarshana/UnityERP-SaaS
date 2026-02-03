@@ -47,6 +47,22 @@ use App\Modules\Procurement\Models\Vendor;
 use App\Modules\Procurement\Models\PurchaseOrder;
 use App\Modules\Procurement\Models\PurchaseReceipt;
 
+// Sales Repositories
+use App\Modules\Sales\Repositories\QuoteRepositoryInterface;
+use App\Modules\Sales\Repositories\QuoteRepository;
+use App\Modules\Sales\Repositories\SalesOrderRepositoryInterface;
+use App\Modules\Sales\Repositories\SalesOrderRepository;
+use App\Modules\Sales\Models\Quote;
+use App\Modules\Sales\Models\SalesOrder;
+
+// Invoice Repositories
+use App\Modules\Invoice\Repositories\InvoiceRepositoryInterface;
+use App\Modules\Invoice\Repositories\InvoiceRepository;
+use App\Modules\Invoice\Repositories\InvoicePaymentRepositoryInterface;
+use App\Modules\Invoice\Repositories\InvoicePaymentRepository;
+use App\Modules\Invoice\Models\Invoice;
+use App\Modules\Invoice\Models\InvoicePayment;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -106,6 +122,24 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(PurchaseReceiptRepositoryInterface::class, function ($app) {
             return new PurchaseReceiptRepository(new PurchaseReceipt());
+        });
+
+        // Sales Repositories
+        $this->app->bind(QuoteRepositoryInterface::class, function ($app) {
+            return new QuoteRepository(new Quote());
+        });
+
+        $this->app->bind(SalesOrderRepositoryInterface::class, function ($app) {
+            return new SalesOrderRepository(new SalesOrder());
+        });
+
+        // Invoice Repositories
+        $this->app->bind(InvoiceRepositoryInterface::class, function ($app) {
+            return new InvoiceRepository(new Invoice());
+        });
+
+        $this->app->bind(InvoicePaymentRepositoryInterface::class, function ($app) {
+            return new InvoicePaymentRepository(new InvoicePayment());
         });
     }
 

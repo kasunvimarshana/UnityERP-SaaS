@@ -30,6 +30,12 @@ use App\Modules\Procurement\Models\Vendor;
 use App\Modules\Procurement\Models\PurchaseOrder;
 use App\Modules\Procurement\Models\PurchaseReceipt;
 use App\Modules\Procurement\Models\PurchaseReturn;
+use App\Policies\QuotePolicy;
+use App\Policies\SalesOrderPolicy;
+use App\Policies\InvoicePolicy;
+use App\Modules\Sales\Models\Quote;
+use App\Modules\Sales\Models\SalesOrder;
+use App\Modules\Invoice\Models\Invoice;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
@@ -59,6 +65,9 @@ class AuthServiceProvider extends ServiceProvider
         PurchaseOrder::class => PurchaseOrderPolicy::class,
         PurchaseReceipt::class => PurchaseReceiptPolicy::class,
         PurchaseReturn::class => PurchaseReturnPolicy::class,
+        Quote::class => QuotePolicy::class,
+        SalesOrder::class => SalesOrderPolicy::class,
+        Invoice::class => InvoicePolicy::class,
     ];
 
     /**

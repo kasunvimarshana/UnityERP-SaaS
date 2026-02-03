@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\Procurement\VendorController;
 use App\Http\Controllers\Api\Procurement\PurchaseOrderController;
 use App\Http\Controllers\Api\Procurement\PurchaseReceiptController;
 use App\Http\Controllers\Api\Procurement\PurchaseReturnController;
+use App\Http\Controllers\Api\Sales\QuoteController;
+use App\Http\Controllers\Api\Sales\SalesOrderController;
+use App\Http\Controllers\Api\Invoice\InvoiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -160,5 +163,42 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::delete('/{id}', [PurchaseReturnController::class, 'destroy']);
             Route::post('/{id}/approve', [PurchaseReturnController::class, 'approve']);
         });
+    });
+
+    // Sales Routes
+    Route::prefix('sales')->group(function () {
+        // Quote routes
+        Route::prefix('quotes')->group(function () {
+            Route::get('/', [QuoteController::class, 'index']);
+            Route::post('/', [QuoteController::class, 'store']);
+            Route::get('/{id}', [QuoteController::class, 'show']);
+            Route::put('/{id}', [QuoteController::class, 'update']);
+            Route::delete('/{id}', [QuoteController::class, 'destroy']);
+            Route::post('/{id}/convert', [QuoteController::class, 'convertToOrder']);
+        });
+
+        // Sales Order routes
+        Route::prefix('orders')->group(function () {
+            Route::get('/', [SalesOrderController::class, 'index']);
+            Route::post('/', [SalesOrderController::class, 'store']);
+            Route::get('/{id}', [SalesOrderController::class, 'show']);
+            Route::put('/{id}', [SalesOrderController::class, 'update']);
+            Route::delete('/{id}', [SalesOrderController::class, 'destroy']);
+            Route::post('/{id}/approve', [SalesOrderController::class, 'approve']);
+            Route::post('/{id}/reserve-inventory', [SalesOrderController::class, 'reserveInventory']);
+            Route::post('/from-quote/{quoteId}', [SalesOrderController::class, 'createFromQuote']);
+        });
+    });
+
+    // Invoice Routes
+    Route::prefix('invoices')->group(function () {
+        Route::get('/', [InvoiceController::class, 'index']);
+        Route::post('/', [InvoiceController::class, 'store']);
+        Route::get('/{id}', [InvoiceController::class, 'show']);
+        Route::put('/{id}', [InvoiceController::class, 'update']);
+        Route::delete('/{id}', [InvoiceController::class, 'destroy']);
+        Route::post('/{id}/approve', [InvoiceController::class, 'approve']);
+        Route::post('/{id}/payments', [InvoiceController::class, 'recordPayment']);
+        Route::post('/from-sales-order/{salesOrderId}', [InvoiceController::class, 'createFromSalesOrder']);
     });
 });
