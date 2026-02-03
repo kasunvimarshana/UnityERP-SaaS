@@ -79,6 +79,11 @@ use App\Modules\POS\Repositories\POSTransactionRepository;
 use App\Modules\POS\Models\POSSession;
 use App\Modules\POS\Models\POSTransaction;
 
+// IAM Repositories
+use App\Modules\IAM\Repositories\UserRepositoryInterface;
+use App\Modules\IAM\Repositories\UserRepository;
+use App\Models\User;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -175,6 +180,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(POSTransactionRepositoryInterface::class, function ($app) {
             return new POSTransactionRepository(new POSTransaction());
         });
+
+        // IAM Repositories
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**
