@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         }
 
         $organization = Organization::where('tenant_id', $tenant->id)->first();
-        $branch = Branch::where('tenant_id', $tenant->id)->where('type', 'warehouse')->first();
+        $branch = Branch::where('tenant_id', $tenant->id)->where('is_warehouse', true)->first();
 
         // Create roles
         $superAdminRole = Role::create(['name' => 'super-admin']);

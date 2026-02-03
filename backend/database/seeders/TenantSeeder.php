@@ -105,7 +105,7 @@ class TenantSeeder extends Seeder
             'name' => 'Demo Company HQ',
             'code' => 'HQ',
             'parent_id' => null,
-            'is_active' => true,
+            'status' => 'active',
         ]);
 
         // Create branches
@@ -114,13 +114,14 @@ class TenantSeeder extends Seeder
             'organization_id' => $organization->id,
             'name' => 'Main Warehouse',
             'code' => 'WH-MAIN',
-            'type' => 'warehouse',
+            'is_warehouse' => true,
+            'is_store' => false,
             'address' => '123 Main Street',
             'city' => 'New York',
             'state' => 'NY',
             'country' => 'USA',
             'postal_code' => '10001',
-            'is_active' => true,
+            'status' => 'active',
         ]);
 
         Branch::create([
@@ -128,13 +129,14 @@ class TenantSeeder extends Seeder
             'organization_id' => $organization->id,
             'name' => 'Retail Store 1',
             'code' => 'STORE-01',
-            'type' => 'retail',
+            'is_warehouse' => false,
+            'is_store' => true,
             'address' => '456 Shopping Plaza',
             'city' => 'New York',
             'state' => 'NY',
             'country' => 'USA',
             'postal_code' => '10002',
-            'is_active' => true,
+            'status' => 'active',
         ]);
     }
 }

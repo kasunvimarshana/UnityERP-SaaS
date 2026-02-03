@@ -40,7 +40,7 @@ class AuthController extends BaseController
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return $this->sendResponse([
+            return $this->successResponse([
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -53,7 +53,7 @@ class AuthController extends BaseController
                 'token_type' => 'Bearer',
             ], 'User registered successfully', 201);
         } catch (\Exception $e) {
-            return $this->sendError('Registration failed', [$e->getMessage()], 500);
+            return $this->errorResponse('Registration failed', [$e->getMessage()], 500);
         }
     }
 
@@ -76,7 +76,7 @@ class AuthController extends BaseController
             
             // Check if tenant is active
             if ($user->tenant && $user->tenant->status !== 'active') {
-                return $this->sendError('Account suspended', [
+                return $this->errorResponse('Account suspended', [
                     'Your account has been suspended. Please contact support.'
                 ], 403);
             }
@@ -86,7 +86,7 @@ class AuthController extends BaseController
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return $this->sendResponse([
+            return $this->successResponse([
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -99,9 +99,9 @@ class AuthController extends BaseController
                 'token_type' => 'Bearer',
             ], 'Login successful');
         } catch (ValidationException $e) {
-            return $this->sendError('Invalid credentials', $e->errors(), 422);
+            return $this->errorResponse('Invalid credentials', $e->errors(), 422);
         } catch (\Exception $e) {
-            return $this->sendError('Login failed', [$e->getMessage()], 500);
+            return $this->errorResponse('Login failed', [$e->getMessage()], 500);
         }
     }
 
@@ -116,9 +116,9 @@ class AuthController extends BaseController
         try {
             $request->user()->currentAccessToken()->delete();
 
-            return $this->sendResponse([], 'Logged out successfully');
+            return $this->successResponse([], 'Logged out successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Logout failed', [$e->getMessage()], 500);
+            return $this->errorResponse('Logout failed', [$e->getMessage()], 500);
         }
     }
 
@@ -133,9 +133,9 @@ class AuthController extends BaseController
         try {
             $request->user()->tokens()->delete();
 
-            return $this->sendResponse([], 'Logged out from all devices successfully');
+            return $this->successResponse([], 'Logged out from all devices successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Logout failed', [$e->getMessage()], 500);
+            return $this->errorResponse('Logout failed', [$e->getMessage()], 500);
         }
     }
 
@@ -151,7 +151,7 @@ class AuthController extends BaseController
             $user = $request->user();
             $user->load(['tenant', 'organization', 'branch', 'roles', 'permissions']);
 
-            return $this->sendResponse([
+            return $this->successResponse([
                 'user' => [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -167,7 +167,7 @@ class AuthController extends BaseController
                 ],
             ], 'User information retrieved successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Failed to retrieve user information', [$e->getMessage()], 500);
+            return $this->errorResponse('Failed to retrieve user information', [$e->getMessage()], 500);
         }
     }
 
@@ -188,12 +188,12 @@ class AuthController extends BaseController
             // Create new token
             $token = $user->createToken('auth_token')->plainTextToken;
 
-            return $this->sendResponse([
+            return $this->successResponse([
                 'access_token' => $token,
                 'token_type' => 'Bearer',
             ], 'Token refreshed successfully');
         } catch (\Exception $e) {
-            return $this->sendError('Token refresh failed', [$e->getMessage()], 500);
+            return $this->errorResponse('Token refresh failed', [$e->getMessage()], 500);
         }
     }
 
@@ -211,12 +211,12 @@ class AuthController extends BaseController
             );
 
             if ($status === Password::RESET_LINK_SENT) {
-                return $this->sendResponse([], 'Password reset link sent successfully');
+                return $this->successResponse([], 'Password reset link sent successfully');
             }
 
-            return $this->sendError('Failed to send reset link', [$status], 500);
+            return $this->errorResponse('Failed to send reset link', [$status], 500);
         } catch (\Exception $e) {
-            return $this->sendError('Failed to process password reset', [$e->getMessage()], 500);
+            return $this->errorResponse('Failed to process password reset', [$e->getMessage()], 500);
         }
     }
 
@@ -243,12 +243,12 @@ class AuthController extends BaseController
             );
 
             if ($status === Password::PASSWORD_RESET) {
-                return $this->sendResponse([], 'Password reset successfully');
+                return $this->successResponse([], 'Password reset successfully');
             }
 
-            return $this->sendError('Failed to reset password', [$status], 500);
+            return $this->errorResponse('Failed to reset password', [$status], 500);
         } catch (\Exception $e) {
-            return $this->sendError('Failed to process password reset', [$e->getMessage()], 500);
+            return $this->errorResponse('Failed to process password reset', [$e->getMessage()], 500);
         }
     }
 }
