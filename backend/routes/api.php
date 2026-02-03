@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
 
@@ -25,10 +26,26 @@ Route::prefix('v1')->group(function () {
             'version' => '1.0.0',
         ]);
     });
+    
+    // Authentication routes (public)
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    });
 });
 
 // Protected routes (authentication required)
-Route::prefix('v1')->middleware(['auth:sanctum'])->group(function () {
+Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(function () {
+    
+    // Authentication routes (protected)
+    Route::prefix('auth')->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/logout-all', [AuthController::class, 'logoutAll']);
+        Route::get('/me', [AuthController::class, 'me']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+    });
     
     // Product Management Routes
     Route::prefix('products')->group(function () {
