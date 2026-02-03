@@ -103,6 +103,16 @@ use App\Modules\Warehouse\Models\WarehouseTransfer;
 use App\Modules\Warehouse\Models\WarehousePicking;
 use App\Modules\Warehouse\Models\WarehousePutaway;
 
+// Taxation Repositories
+use App\Modules\Taxation\Repositories\TaxGroupRepository;
+use App\Modules\Taxation\Repositories\TaxExemptionRepository;
+use App\Modules\Taxation\Repositories\TaxJurisdictionRepository;
+use App\Modules\Taxation\Repositories\TaxCalculationRepository;
+use App\Modules\Taxation\Models\TaxGroup;
+use App\Modules\Taxation\Models\TaxExemption;
+use App\Modules\Taxation\Models\TaxJurisdiction;
+use App\Modules\Taxation\Models\TaxCalculation;
+
 class RepositoryServiceProvider extends ServiceProvider
 {
     /**
@@ -223,6 +233,23 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(WarehousePutawayRepositoryInterface::class, function ($app) {
             return new WarehousePutawayRepository(new WarehousePutaway());
+        });
+
+        // Taxation Repositories
+        $this->app->singleton(TaxGroupRepository::class, function ($app) {
+            return new TaxGroupRepository(new TaxGroup());
+        });
+
+        $this->app->singleton(TaxExemptionRepository::class, function ($app) {
+            return new TaxExemptionRepository(new TaxExemption());
+        });
+
+        $this->app->singleton(TaxJurisdictionRepository::class, function ($app) {
+            return new TaxJurisdictionRepository(new TaxJurisdiction());
+        });
+
+        $this->app->singleton(TaxCalculationRepository::class, function ($app) {
+            return new TaxCalculationRepository(new TaxCalculation());
         });
     }
 

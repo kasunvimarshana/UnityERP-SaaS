@@ -29,6 +29,10 @@ use App\Http\Controllers\Api\Manufacturing\WorkOrderController;
 use App\Http\Controllers\Api\Warehouse\WarehouseTransferController;
 use App\Http\Controllers\Api\Warehouse\WarehousePickingController;
 use App\Http\Controllers\Api\Warehouse\WarehousePutawayController;
+use App\Http\Controllers\Api\Taxation\TaxGroupController;
+use App\Http\Controllers\Api\Taxation\TaxExemptionController;
+use App\Http\Controllers\Api\Taxation\TaxJurisdictionController;
+use App\Http\Controllers\Api\Taxation\TaxCalculationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -419,6 +423,52 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::post('/{id}/putaway', [WarehousePutawayController::class, 'putaway']);
             Route::post('/{id}/complete', [WarehousePutawayController::class, 'complete']);
             Route::post('/{id}/cancel', [WarehousePutawayController::class, 'cancel']);
+        });
+    });
+
+    // Taxation Routes
+    Route::prefix('taxation')->group(function () {
+        // Tax Groups
+        Route::prefix('tax-groups')->group(function () {
+            Route::get('/', [TaxGroupController::class, 'index']);
+            Route::post('/', [TaxGroupController::class, 'store']);
+            Route::get('/active', [TaxGroupController::class, 'active']);
+            Route::get('/{id}', [TaxGroupController::class, 'show']);
+            Route::put('/{id}', [TaxGroupController::class, 'update']);
+            Route::delete('/{id}', [TaxGroupController::class, 'destroy']);
+            Route::post('/{id}/attach-tax-rate', [TaxGroupController::class, 'attachTaxRate']);
+            Route::delete('/{id}/detach-tax-rate/{taxRateId}', [TaxGroupController::class, 'detachTaxRate']);
+        });
+
+        // Tax Exemptions
+        Route::prefix('tax-exemptions')->group(function () {
+            Route::get('/', [TaxExemptionController::class, 'index']);
+            Route::post('/', [TaxExemptionController::class, 'store']);
+            Route::get('/active', [TaxExemptionController::class, 'active']);
+            Route::get('/by-entity', [TaxExemptionController::class, 'byEntity']);
+            Route::get('/{id}', [TaxExemptionController::class, 'show']);
+            Route::put('/{id}', [TaxExemptionController::class, 'update']);
+            Route::delete('/{id}', [TaxExemptionController::class, 'destroy']);
+        });
+
+        // Tax Jurisdictions
+        Route::prefix('tax-jurisdictions')->group(function () {
+            Route::get('/', [TaxJurisdictionController::class, 'index']);
+            Route::post('/', [TaxJurisdictionController::class, 'store']);
+            Route::get('/active', [TaxJurisdictionController::class, 'active']);
+            Route::get('/find-by-location', [TaxJurisdictionController::class, 'findByLocation']);
+            Route::get('/{id}', [TaxJurisdictionController::class, 'show']);
+            Route::put('/{id}', [TaxJurisdictionController::class, 'update']);
+            Route::delete('/{id}', [TaxJurisdictionController::class, 'destroy']);
+        });
+
+        // Tax Calculations
+        Route::prefix('calculations')->group(function () {
+            Route::post('/calculate', [TaxCalculationController::class, 'calculate']);
+            Route::post('/calculate-and-save', [TaxCalculationController::class, 'calculateAndSave']);
+            Route::get('/history', [TaxCalculationController::class, 'history']);
+            Route::get('/summary', [TaxCalculationController::class, 'summary']);
+            Route::get('/breakdown', [TaxCalculationController::class, 'breakdown']);
         });
     });
 });
