@@ -319,4 +319,24 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'tenant.context'])->group(funct
             Route::post('/{id}/receipt', [POSTransactionController::class, 'generateReceipt']);
         });
     });
+    
+    // Pricing Management Routes
+    Route::prefix('pricing')->group(function () {
+        // Pricing Calculations
+        Route::post('/calculate', [\App\Http\Controllers\Api\Pricing\PricingCalculationController::class, 'calculate']);
+        Route::post('/calculate-bulk', [\App\Http\Controllers\Api\Pricing\PricingCalculationController::class, 'calculateBulk']);
+        Route::get('/applicable-rules', [\App\Http\Controllers\Api\Pricing\PricingCalculationController::class, 'getApplicableRules']);
+        Route::get('/applicable-tiers', [\App\Http\Controllers\Api\Pricing\PricingCalculationController::class, 'getApplicableTiers']);
+        
+        // Pricing Rules
+        Route::prefix('rules')->group(function () {
+            Route::get('/', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'index']);
+            Route::post('/', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'store']);
+            Route::get('/{id}', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'show']);
+            Route::put('/{id}', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'update']);
+            Route::delete('/{id}', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'destroy']);
+            Route::post('/{id}/activate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'activate']);
+            Route::post('/{id}/deactivate', [\App\Http\Controllers\Api\Pricing\PricingRuleController::class, 'deactivate']);
+        });
+    });
 });
