@@ -24,7 +24,7 @@ return new class extends Migration
             
             $table->enum('discount_type', ['none', 'flat', 'percentage'])->default('none');
             $table->decimal('discount_value', 10, 2)->default(0);
-            $table->decimal('discount_amount', 15, 2')->default(0);
+            $table->decimal('discount_amount', 15, 2)->default(0);
             
             $table->decimal('tax_rate', 5, 2)->default(0);
             $table->decimal('tax_amount', 15, 2)->default(0);
