@@ -10,10 +10,12 @@ class StoreProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Uses ProductPolicy to enforce fine-grained authorization.
      */
     public function authorize(): bool
     {
-        return true;
+        return $this->user()->can('create', \App\Modules\Product\Models\Product::class);
     }
 
     /**

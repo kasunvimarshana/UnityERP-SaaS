@@ -10,10 +10,13 @@ class StockTransferRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Uses StockLedgerPolicy to enforce fine-grained authorization for stock operations.
      */
     public function authorize(): bool
     {
-        return true;
+        // Check if user has permission to perform stock transfers
+        return $this->user()->can('stockTransfer', \App\Modules\Inventory\Models\StockLedger::class);
     }
 
     /**

@@ -10,10 +10,28 @@ class UpdateProductRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Uses ProductPolicy to enforce fine-grained authorization.
      */
     public function authorize(): bool
     {
-        return true;
+        $product = $this->route('product');
+        
+        // If product is a model instance, authorize against it
+        if ($product instanceof \App\Modules\Product\Models\Product) {
+            return $this->user()->can('update', $product);
+        }
+        
+        // If product is an ID, load it and check authorization
+        if (is_numeric($product)) {
+            $productModel = \App\Modules\Product\Models\Product::find($product);
+            if (!$productModel) {
+                return false;
+            }
+            return $this->user()->can('update', $productModel);
+        }
+        
+        return false;
     }
 
     /**

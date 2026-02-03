@@ -10,10 +10,13 @@ class StockInRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     * 
+     * Uses StockLedgerPolicy to enforce fine-grained authorization for stock operations.
      */
     public function authorize(): bool
     {
-        return true;
+        // Check if user has permission to perform stock in operations
+        return $this->user()->can('stockIn', \App\Modules\Inventory\Models\StockLedger::class);
     }
 
     /**
